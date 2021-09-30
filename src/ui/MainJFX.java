@@ -1,6 +1,5 @@
 package ui;
 
-import com.sun.tools.javac.Main;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
@@ -8,13 +7,13 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
-import javafx.stage.*;
+import javafx.stage.Screen;
+import javafx.stage.Stage;
 
 import java.util.Objects;
 
 public class MainJFX extends Application {
-    private static Scene primaryScene;
-    public static Stage Stage ;
+    public static Stage Stage;
     private final Image APP_ICON = new Image(Objects.requireNonNull(ui.Main.class.getResourceAsStream("LogoAppli.jpg")));
 
     @Override
@@ -30,7 +29,7 @@ public class MainJFX extends Application {
         Stage = primaryStage;
         primaryStage.setTitle("JMP3Tagger");
         Rectangle2D screenBounds = Screen.getPrimary().getBounds();
-        primaryScene = new Scene(root, (screenBounds.getWidth() > 1284) ? 1284 : screenBounds.getWidth(), (screenBounds.getHeight() > 811) ? 811 : screenBounds.getHeight() - 10);
+        Scene primaryScene = new Scene(root, (screenBounds.getWidth() > 1284) ? 1284 : screenBounds.getWidth(), (screenBounds.getHeight() > 811) ? 811 : screenBounds.getHeight() - 10);
         primaryStage.setScene(primaryScene);
         primaryStage.getIcons().add(APP_ICON);
         primaryStage.show();
