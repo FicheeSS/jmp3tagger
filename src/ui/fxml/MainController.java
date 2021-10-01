@@ -3,7 +3,6 @@ package ui.fxml;
 import com.mpatric.mp3agic.InvalidDataException;
 import com.mpatric.mp3agic.NotSupportedException;
 import com.mpatric.mp3agic.UnsupportedTagException;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -195,7 +194,7 @@ public class MainController implements Initializable {
     }
 
     public void onClose(ActionEvent actionEvent) {
-        Platform.exit();
+        MainJFX.stopTray();
     }
 
     public void checkUpdate(){

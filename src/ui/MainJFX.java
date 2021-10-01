@@ -12,6 +12,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 import java.net.URL;
 import java.util.Objects;
@@ -23,7 +24,7 @@ public class MainJFX extends Application {
     public static FXTrayIcon trayIcon;
 
 
-    public void stop(){
+    public static void stopTray(){
         trayIcon.hide();
         Platform.exit();
     }
@@ -46,8 +47,11 @@ public class MainJFX extends Application {
         primaryStage.show();
         trayIcon = new FXTrayIcon(MainJFX.Stage,MainJFX.APP_ICONLOC);
         trayIcon.show();
+        Stage.setOnCloseRequest((WindowEvent t) -> {
+            stopTray();
+        });
         MenuItem menuItemTest = new MenuItem("Exit");
-        menuItemTest.setOnAction(e -> stop()
+        menuItemTest.setOnAction(e -> stopTray()
                );
         trayIcon.addMenuItem(menuItemTest);
         Alert alert = new Alert(Alert.AlertType.WARNING);
