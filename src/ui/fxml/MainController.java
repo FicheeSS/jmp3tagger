@@ -3,8 +3,10 @@ package ui.fxml;
 import com.mpatric.mp3agic.InvalidDataException;
 import com.mpatric.mp3agic.NotSupportedException;
 import com.mpatric.mp3agic.UnsupportedTagException;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -187,6 +189,76 @@ public class MainController implements Initializable {
         }
         currentMessage = items.get(index);
 
+    }
+
+    public void onClose(ActionEvent actionEvent) {
+        Platform.exit();
+    }
+
+    public void checkUpdate(){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Mise a jour");
+        alert.setContentText("Option en dévellopement");
+        alert.showAndWait();
+        return;
+        /*
+        boolean error = false;
+        try {
+            InetAddress ip =InetAddress.getByName("www.github.com");
+            if(!ip.isReachable(160)){
+                error = true;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            error = true;
+        }
+        if(error){
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Mise a jour");
+            alert.setContentText("Connexion indisponible");
+            alert.showAndWait();
+            return ;
+        }
+        Path tmpFile ;
+        try {
+            tmpFile = Files.createTempFile("temp",".ini");
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+        try {
+            Files.copy(
+                    //Some hardcoding never hurted anyone ...
+                    new URL("https://raw.githubusercontent.com/FicheeSS/Projet6POO/c51af1d23221e97c8361219ae3dfe2cbc208daaf/config.ini").openStream(),
+                    tmpFile,
+                    StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+        Ini ini;
+        try {
+            ini = new Ini(new File(tmpFile.toString()));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+        assert ini != null;
+        if(Main.MAJORVERSION < Integer.parseInt(ini.get("Application Properties", "MajorVersion"))||
+                Main.VERSION < Integer.parseInt(ini.get("Application Properties", "Version"))||
+                Main.BUILDNUMBER < Integer.parseInt(ini.get("Application Properties", "BuildNumber"))){
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Mise a jour");
+            alert.setContentText("Une mise à jour est disponible");
+            alert.showAndWait();
+        }else {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Mise a jour");
+            alert.setContentText("Votre programme est à jour");
+            alert.showAndWait();
+        }
+
+         */
     }
 
     private record MessageObject(String text, File f) {
