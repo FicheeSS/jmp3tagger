@@ -1,21 +1,32 @@
 package ui;
 
+import com.dustinredmond.fxtrayicon.FXTrayIcon;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
+import java.net.URL;
 import java.util.Objects;
 
 public class MainJFX extends Application {
     public static Stage Stage;
-    private final Image APP_ICON = new Image(Objects.requireNonNull(ui.Main.class.getResourceAsStream("LogoAppli.jpg")));
+    public final Image APP_ICON = new Image(Objects.requireNonNull(ui.Main.class.getResourceAsStream("LogoAppli.jpg")));
+    public static final URL APP_ICONLOC =  Main.class.getResource("LogoAppli.jpg");
+    public static FXTrayIcon trayIcon;
 
+
+    public void stop(){
+        trayIcon.hide();
+        Platform.exit();
+    }
     @Override
     public void start(Stage primaryStage) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/fxml/mainWindow.fxml"));
@@ -33,6 +44,12 @@ public class MainJFX extends Application {
         primaryStage.setScene(primaryScene);
         primaryStage.getIcons().add(APP_ICON);
         primaryStage.show();
+        trayIcon = new FXTrayIcon(MainJFX.Stage,MainJFX.APP_ICONLOC);
+        trayIcon.show();
+        MenuItem menuItemTest = new MenuItem("Exit");
+        menuItemTest.setOnAction(e -> stop()
+               );
+        trayIcon.addMenuItem(menuItemTest);
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("ATTENTION");
         alert.setHeaderText("Attention");

@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
+import static ui.MainJFX.trayIcon;
+
 public class MainController implements Initializable {
     private final DirectoryChooser directoryChooser = new DirectoryChooser();
     private final ObservableList<MessageObject> items = FXCollections.observableArrayList();
@@ -94,6 +96,9 @@ public class MainController implements Initializable {
 
         alert.showAndWait();
     }
+    protected void showTrayError(String s){
+        trayIcon.showInfoMessage("Lyrics", s);
+    }
 
     protected void showError(String errorMessage) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -137,15 +142,13 @@ public class MainController implements Initializable {
         try {
             lyricsField.setText(Main.lyrcisFetcher.GetLyricsFromArtistNameAndTrackName(artistName.getText(), trackName.getText()));
         }catch (RuntimeException e ){
-            showError(e.getMessage());
+            showTrayError(e.getMessage());
         }
     }
 
     public void onUpdate() {
         IDObject idO = new IDObject(currentMessage.getFile());
         ArrayList<Pair<TagsTypes.Tags, String>> tags = new ArrayList<Pair<TagsTypes.Tags, String>>();
-
-
         tags.add(Pair.with(TagsTypes.Tags.ARTIST, artistName.getText()));
         tags.add(Pair.with(TagsTypes.Tags.TITLE, trackName.getText()));
         tags.add(Pair.with(TagsTypes.Tags.ALBUM, albumName.getText()));
@@ -196,11 +199,15 @@ public class MainController implements Initializable {
     }
 
     public void checkUpdate(){
+
+        /*
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Mise a jour");
-        alert.setContentText("Option en dévellopement");
+        alert.setContentText("INOP");
         alert.showAndWait();
         return;
+        */
+
         /*
         boolean error = false;
         try {
