@@ -19,7 +19,8 @@ public class LyrcisFetcher {
         }
 
     }
- @Deprecated
+
+ @Deprecated(forRemoval = true)
     public String GetLyrics(IDObject idO) throws InvalidDataException, UnsupportedTagException, IOException , RuntimeException {
         String artist = null, trackName = null;
         ArrayList<Pair<TagsTypes.Tags, String>> Tags = idO.getTags();
@@ -33,7 +34,13 @@ public class LyrcisFetcher {
         return GetLyricsFromArtistNameAndTrackName(artist, trackName);
     }
 
-    public String GetLyricsFromArtistNameAndTrackName(String artistname, String trackname) throws RuntimeException {
+    /**
+     * Download and process the Lyrics from the provided params
+     * @param artistname String
+     * @param trackname String
+     * @return String formated Lyrics
+     */
+    public String GetLyricsFromArtistNameAndTrackName(String artistname, String trackname) {
         String URL = CreateURL(artistname, trackname);// Generate the correct URl to get the html
         Document doc;
 

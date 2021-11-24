@@ -17,6 +17,13 @@ public class IDObject {
 
     }
 
+    /**
+     * Return an formated tab of the Tags name and what contain the tags
+     * @return Array of tuple
+     * @throws InvalidDataException triggered if the tag containt invalidData
+     * @throws UnsupportedTagException triggered if the tag retrieved is not recognized
+     * @throws IOException triggered if the file is not accessible
+     */
     public ArrayList<Pair<TagsTypes.Tags, String>> getTags() throws InvalidDataException, UnsupportedTagException, IOException {
         com.mpatric.mp3agic.Mp3File mp3file;
         ArrayList<Pair<TagsTypes.Tags, String>> tags = new ArrayList<Pair<TagsTypes.Tags, String>>();
@@ -27,14 +34,23 @@ public class IDObject {
         if (mp3file.hasId3v2Tag()) {
             ID3v2 id3v2Tag = mp3file.getId3v2Tag();
 
-            tags.add(Pair.with(TagsTypes.Tags.ARTIST, id3v2Tag.getArtist()));
-            tags.add(Pair.with(TagsTypes.Tags.TITLE, id3v2Tag.getTitle()));
-            tags.add(Pair.with(TagsTypes.Tags.ALBUM, id3v2Tag.getAlbum()));
-            tags.add(Pair.with(TagsTypes.Tags.LYRICS, id3v2Tag.getLyrics()));
+            tags.add(Pair.with(TagsTypes.Tags.ARTIST, (id3v2Tag.getArtist() == null) ? "" : id3v2Tag.getArtist() ));
+            tags.add(Pair.with(TagsTypes.Tags.TITLE, (id3v2Tag.getTitle() == null ) ? "" : id3v2Tag.getTitle()));
+            tags.add(Pair.with(TagsTypes.Tags.ALBUM, (id3v2Tag.getAlbum() == null) ? "" : id3v2Tag.getAlbum() ));
+            tags.add(Pair.with(TagsTypes.Tags.LYRICS, (id3v2Tag.getLyrics() == null) ? "" : id3v2Tag.getLyrics() ));
         }
         return tags;
     }
 
+    /**
+     * Update the tag from the modified array and replace the data in the regular exp
+     * @param tags Array of tuple
+     * @param regularExp A regular expressions that contain specific field
+     * @throws InvalidDataException triggered if the tag containt invalidData
+     * @throws UnsupportedTagException triggered if the tag retrieved is not recognized
+     * @throws IOException triggered if the file is not accessible or cannot be written
+     * @throws NotSupportedException ?
+     */
     public void setTags(ArrayList<Pair<TagsTypes.Tags, String>> tags, String regularExp) throws InvalidDataException, UnsupportedTagException, IOException, NotSupportedException {
         Mp3File mp3file = new Mp3File(this.Mp3File.getAbsoluteFile());
         ID3v2 id3v2Tag;
@@ -49,16 +65,16 @@ public class IDObject {
 
             }
         }
-        if (!id3v2Tag.getArtist().isEmpty()) {
+        if (id3v2Tag.getArtist() != null && !id3v2Tag.getArtist().isEmpty()) {
             regularExp = regularExp.replaceAll("%artist%", id3v2Tag.getArtist());
         }
-        if (!id3v2Tag.getAlbum().isEmpty()) {
+        if (id3v2Tag.getAlbum() != null && !id3v2Tag.getAlbum().isEmpty()) {
             regularExp = regularExp.replaceAll("%album%", id3v2Tag.getAlbum());
         }
-        if (!id3v2Tag.getTitle().isEmpty()) {
+        if (id3v2Tag.getTitle() != null && !id3v2Tag.getTitle().isEmpty()) {
             regularExp = regularExp.replaceAll("%trackname%", id3v2Tag.getTitle());
         }
-        if (!id3v2Tag.getYear().isEmpty()) {
+        if (id3v2Tag.getYear()!= null && !id3v2Tag.getYear().isEmpty()) {
             regularExp = regularExp.replaceAll("%year%", id3v2Tag.getYear());
         }
         mp3file.save(Mp3File.getParentFile().getPath() + "\\" + regularExp + ".mp3");

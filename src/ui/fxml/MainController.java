@@ -22,9 +22,12 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.stream.Stream;
 
 import static ui.MainJFX.trayIcon;
 
@@ -42,12 +45,17 @@ public class MainController implements Initializable {
     public TextField albumName;
     public TextField regularExpr;
     private MessageObject currentMessage;
+    public ProgressBar applyBar;
+    public File selectedDirectory;
     private final ArrayList<IDObject> MP3FileList = new ArrayList<IDObject>();
+
+    @FXML
+    private CheckBox recursage;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         mp3List.setItems(items);
-        mp3List.setCellFactory(param -> new ListCell<MessageObject>() {
+        mp3List.setCellFactory(param -> new ListCell<>() {
             @Override
             public void updateItem(MessageObject message, boolean empty) {
                 //imageView.setImage();
@@ -75,6 +83,10 @@ public class MainController implements Initializable {
         return s;
     }
 
+    /**
+     * Create and show an exception popup
+     * @param e Exeption
+     */
     private void showError(Exception e) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error alert");
@@ -95,8 +107,8 @@ public class MainController implements Initializable {
 
         alert.showAndWait();
     }
-    protected void showTrayError(String s){
-        trayIcon.showInfoMessage("Lyrics", s);
+    protected void showTrayMessage(String s){
+        trayIcon.showInfoMessage("JMP3Tagger", s);
     }
 
     protected void showError(String errorMessage) {
@@ -110,26 +122,45 @@ public class MainController implements Initializable {
         items.add(new MessageObject(f.getName(), f));
     }
 
-    public void onSelectDirectory() {
-        File selectedDirectory = directoryChooser.showDialog(MainJFX.Stage);
-        if (selectedDirectory != null) {
-            folder.setText(selectedDirectory.getAbsolutePath());
-        } else {
-            return;
-        }
+    /**
+     * Research the directory
+     */
+    public void refreshDirectory(){
         ArrayList<String> mp3Files = new ArrayList<String>();
-        for (String f : Objects.requireNonNull(selectedDirectory.list())) {
-            if (f.endsWith(".mp3")) {
-                mp3Files.add(selectedDirectory.getAbsolutePath() + "\\" + f);
+        if(recursage.isSelected()) {
+            try (Stream<Path> walkStream = Files.walk(selectedDirectory.toPath())) {
+                walkStream.filter(p -> p.toFile().isFile()).forEach(f -> {
+                    if (f.toString().endsWith(".mp3")) {
+                        mp3Files.add(f.toString());
+                    }
+                });
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }else {
+            for (var f : Objects.requireNonNull(selectedDirectory.list())) {
+                if (f.endsWith(".mp3")) {
+                    mp3Files.add(selectedDirectory.getAbsolutePath() + "\\" + f);
+                }
             }
         }
-
-        for (String s : mp3Files) {
+        MP3FileList.clear();
+        items.clear();
+        for (var s : mp3Files) {
             File f = new File(s);
             addFileToDisp(f);
             IDObject o = new IDObject(f);
             MP3FileList.add(o);
         }
+    }
+    public void onSelectDirectory() {
+        selectedDirectory = directoryChooser.showDialog(MainJFX.Stage);
+        if (selectedDirectory != null) {
+            folder.setText(selectedDirectory.getAbsolutePath());
+        } else {
+            return;
+        }
+        refreshDirectory();
 
     }
 
@@ -141,7 +172,7 @@ public class MainController implements Initializable {
         try {
             lyricsField.setText(Main.lyrcisFetcher.GetLyricsFromArtistNameAndTrackName(artistName.getText(), trackName.getText()));
         }catch (RuntimeException e ){
-            showTrayError(e.getMessage());
+            showTrayMessage(e.getMessage());
         }
     }
 
@@ -198,7 +229,7 @@ public class MainController implements Initializable {
     }
 
     public void checkUpdate(){
-
+        showTrayMessage("INOP");
         /*
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Mise a jour");
@@ -265,6 +296,20 @@ public class MainController implements Initializable {
         }
 
          */
+    }
+
+    public void onApplyOnFolder(ActionEvent actionEvent) {
+        showTrayMessage("Starting batch apply...");
+        applyBar.setProgress(0);
+        for(var mp3f : MP3FileList){
+            try {
+                mp3f.setTags(mp3f.getTags(),regularExpr.getText());
+                applyBar.setProgress((MP3FileList.indexOf(mp3f)/MP3FileList.size()) * 100);
+            } catch (InvalidDataException | UnsupportedTagException | IOException | NotSupportedException e) {
+                showError(e);
+            }
+        }
+        showTrayMessage("Finished batch apply");
     }
 
     private record MessageObject(String text, File f) {
