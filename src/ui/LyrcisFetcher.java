@@ -41,13 +41,16 @@ public class LyrcisFetcher {
      * @return String formated Lyrics
      */
     public String GetLyricsFromArtistNameAndTrackName(String artistname, String trackname) {
+        if(artistname.length() == 0 || trackname.length() == 0 ){
+            return "";
+        }
         String URL = CreateURL(artistname, trackname);// Generate the correct URl to get the html
         Document doc;
-
         try {
             doc = Jsoup.connect(URL).get();// get the html code
         } catch (IOException ex) {
-            throw new RuntimeException("Could not get lyrics for " + artistname + " /w track name " + trackname + " /w the URL : " + URL);
+            System.err.println("Could not get lyrics for " + artistname + " /w track name " + trackname + " /w the URL : " + URL);
+            return "";
 
         }
         String FinalLyrics = PrepareHTML(doc);// remove all the junk from the html to get a great lyrics text

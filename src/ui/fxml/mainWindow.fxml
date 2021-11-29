@@ -2,6 +2,7 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
@@ -31,7 +32,7 @@
         <TextField fx:id="regularExpr" layoutX="148.0" layoutY="450.0" prefHeight="26.0" prefWidth="417.0" text="\%trackname% - %artist%" />
         <TextArea editable="false" layoutX="148.0" layoutY="296.0" prefHeight="118.0" prefWidth="418.0" text="- %year%&#10;- %artist%&#10;- %trackname%&#10;-%albumname%&#10;" />
         <Button fx:id="updFile" layoutX="602.0" layoutY="451.0" mnemonicParsing="false" onAction="#onUpdate" text="Update File" />
-        <TextArea fx:id="lyricsField" layoutX="65.0" layoutY="499.0" prefHeight="280.0" prefWidth="292.0" />
+        <TextArea fx:id="lyricsField" layoutX="65.0" layoutY="521.0" prefHeight="258.0" prefWidth="292.0" />
         <Button fx:id="searchLyrics" layoutX="373.0" layoutY="753.0" mnemonicParsing="false" onAction="#onSearchLyrics" text="Search Lyrics" />
       <MenuBar layoutX="-1.0" layoutY="-2.0" prefHeight="26.0" prefWidth="1077.0" AnchorPane.leftAnchor="-1.0" AnchorPane.rightAnchor="0.40000000000009095" AnchorPane.topAnchor="-2.0">
         <menus>
@@ -58,11 +59,13 @@
                <children>
                   <Button layoutX="153.0" layoutY="154.0" mnemonicParsing="false" onAction="#onApplyOnFolder" prefHeight="25.0" prefWidth="112.0" text="Apply on folder" />
                   <ProgressBar fx:id="applyBar" layoutX="27.0" layoutY="127.0" prefHeight="18.0" prefWidth="228.0" progress="0.0" />
+                  <CheckBox fx:id="addLyrics" layoutX="27.0" layoutY="46.0" mnemonicParsing="false" prefHeight="18.0" prefWidth="84.0" text="Add lyrics" />
                </children>
             </AnchorPane>
         </content>
       </TitledPane>
       <CheckBox fx:id="recursage" layoutX="502.0" layoutY="40.0" mnemonicParsing="false" prefHeight="18.0" prefWidth="150.0" text="Search Recursivly" />
       <Button layoutX="640.0" layoutY="35.0" mnemonicParsing="false" onAction="#refreshDirectory" text="Refresh" />
+      <Label layoutX="69.0" layoutY="499.0" prefHeight="18.0" prefWidth="116.0" text="Lyrics :" />
     </children>
 </AnchorPane>

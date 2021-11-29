@@ -46,8 +46,9 @@ public class MainController implements Initializable {
     public TextField regularExpr;
     private MessageObject currentMessage;
     public ProgressBar applyBar;
-    public File selectedDirectory;
+    private File selectedDirectory;
     private final ArrayList<IDObject> MP3FileList = new ArrayList<IDObject>();
+    public CheckBox addLyrics;
 
     @FXML
     private CheckBox recursage;
@@ -70,6 +71,7 @@ public class MainController implements Initializable {
         });
         if (Main.lyrcisFetcher == null) {
             searchLyrics.setDisable(true);
+            addLyrics.setDisable(true);
         }
 
 
@@ -157,8 +159,11 @@ public class MainController implements Initializable {
         selectedDirectory = directoryChooser.showDialog(MainJFX.Stage);
         if (selectedDirectory != null) {
             folder.setText(selectedDirectory.getAbsolutePath());
-        } else {
+        // Complete garbage never do that please
+        } else if(folder.getText() == null || Objects.equals(folder.getText(), "")){
             return;
+        }else{
+            selectedDirectory = new File(folder.getText());
         }
         refreshDirectory();
 
@@ -301,15 +306,31 @@ public class MainController implements Initializable {
     public void onApplyOnFolder(ActionEvent actionEvent) {
         showTrayMessage("Starting batch apply...");
         applyBar.setProgress(0);
+        ArrayList<Thread> threadArrayList = new ArrayList<Thread>();
         for(var mp3f : MP3FileList){
-            try {
-                mp3f.setTags(mp3f.getTags(),regularExpr.getText());
-                applyBar.setProgress((MP3FileList.indexOf(mp3f)/MP3FileList.size()) * 100);
-            } catch (InvalidDataException | UnsupportedTagException | IOException | NotSupportedException e) {
-                showError(e);
-            }
+            mp3f.beforeRun(addLyrics.isSelected(),regularExpr.getText(),Main.lyrcisFetcher);
+            Thread t = new Thread(mp3f);
+            threadArrayList.add(t);
+            t.start();
         }
-        showTrayMessage("Finished batch apply");
+        Thread gt = new Thread(() -> {
+            float nbT = threadArrayList.size();
+            while (!threadArrayList.isEmpty()) {
+                ArrayList<Thread> tbd = new ArrayList<Thread>();
+                for (var t : threadArrayList) {
+                    if (!t.isAlive()) {
+                        tbd.add(t);
+                    }
+                }
+                for (var t : tbd) {
+                    threadArrayList.remove(t);
+                }
+                applyBar.setProgress(((nbT - threadArrayList.size()) / nbT) * 100);
+            }
+            showTrayMessage("Finished batch apply");
+        });
+        gt.start();
+
     }
 
     private record MessageObject(String text, File f) {

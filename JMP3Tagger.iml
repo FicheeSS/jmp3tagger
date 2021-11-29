@@ -18,5 +18,15 @@
     <orderEntry type="library" name="mp3agic-0.9.1" level="project" />
     <orderEntry type="library" name="ini4j" level="project" />
     <orderEntry type="library" name="dustinredmond.fxtrayicon.FXTrayIcon" level="project" />
+    <orderEntry type="library" name="javafx.media" level="project" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/annotations-20.1.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>
