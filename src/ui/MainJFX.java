@@ -58,6 +58,8 @@ public class MainJFX extends Application {
         alert.setTitle("ATTENTION");
         alert.setHeaderText("Attention");
         alert.setContentText("Ce programme est très instable et codé par quelqu'un de très instable aussi. A utiliser avec prudence");
+        var stage = (Stage) alert.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(APP_ICON);
         alert.showAndWait();
 
     }

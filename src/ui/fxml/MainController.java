@@ -35,7 +35,7 @@ public class MainController implements Initializable {
     private final DirectoryChooser directoryChooser = new DirectoryChooser();
     private final ObservableList<MessageObject> items = FXCollections.observableArrayList();
     public TextField folder;
-    public ListView<MessageObject> mp3List = new ListView<MessageObject>();
+    public ListView<MessageObject> mp3List = new ListView<>();
     public Button updFile;
     public Button searchLyrics;
     public TextArea lyricsField;
@@ -47,7 +47,7 @@ public class MainController implements Initializable {
     private MessageObject currentMessage;
     public ProgressBar applyBar;
     private File selectedDirectory;
-    private final ArrayList<IDObject> MP3FileList = new ArrayList<IDObject>();
+    private final ArrayList<IDObject> MP3FileList = new ArrayList<>();
     public CheckBox addLyrics;
     @FXML
     public Button folderApplyB;
@@ -57,6 +57,7 @@ public class MainController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         mp3List.setItems(items);
+        regularExpr.setText(Main.BASEREGEX);
         mp3List.setCellFactory(param -> new ListCell<>() {
             @Override
             public void updateItem(MessageObject message, boolean empty) {
@@ -82,8 +83,7 @@ public class MainController implements Initializable {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
-        String s = sw.toString();
-        return s;
+        return sw.toString();
     }
 
     /**
@@ -129,7 +129,7 @@ public class MainController implements Initializable {
      * Research the directory
      */
     public void refreshDirectory(){
-        ArrayList<String> mp3Files = new ArrayList<String>();
+        ArrayList<String> mp3Files = new ArrayList<>();
         if(recursage.isSelected()) {
             try (Stream<Path> walkStream = Files.walk(selectedDirectory.toPath())) {
                 walkStream.filter(p -> p.toFile().isFile()).forEach(f -> {
@@ -184,7 +184,7 @@ public class MainController implements Initializable {
 
     public void onUpdate() {
         IDObject idO = new IDObject(currentMessage.getFile());
-        ArrayList<Pair<TagsTypes.Tags, String>> tags = new ArrayList<Pair<TagsTypes.Tags, String>>();
+        ArrayList<Pair<TagsTypes.Tags, String>> tags = new ArrayList<>();
         tags.add(Pair.with(TagsTypes.Tags.ARTIST, artistName.getText()));
         tags.add(Pair.with(TagsTypes.Tags.TITLE, trackName.getText()));
         tags.add(Pair.with(TagsTypes.Tags.ALBUM, albumName.getText()));
@@ -205,7 +205,7 @@ public class MainController implements Initializable {
             return;
         }
         IDObject o = MP3FileList.get(index);
-        ArrayList<Pair<TagsTypes.Tags, String>> Tags = null;
+        ArrayList<Pair<TagsTypes.Tags, String>> Tags;
         try {
             Tags = o.getTags();
         } catch (InvalidDataException | UnsupportedTagException | IOException e) {
@@ -230,7 +230,7 @@ public class MainController implements Initializable {
 
     }
 
-    public void onClose(ActionEvent actionEvent) {
+    public void onClose(ActionEvent ignoredActionEvent) {
         MainJFX.stopTray();
     }
 
@@ -316,8 +316,9 @@ public class MainController implements Initializable {
         }
         Thread gt = new Thread(() -> {
             float nbT = threadArrayList.size();
+            ArrayList<Thread> tbd = new ArrayList<>();
+
             while (!threadArrayList.isEmpty()) {
-                ArrayList<Thread> tbd = new ArrayList<>();
                 for (var t : threadArrayList) {
                     if (!t.isAlive()) {
                         tbd.add(t);
@@ -326,6 +327,7 @@ public class MainController implements Initializable {
                 for (var t : tbd) {
                     threadArrayList.remove(t);
                 }
+                tbd.clear();
 
                 applyBar.setProgress(((nbT - threadArrayList.size()) / nbT));
 
