@@ -98,14 +98,22 @@ public class IDObject  implements Runnable{
         if (id3v2Tag.getYear()!= null && !id3v2Tag.getYear().isEmpty()) {
             regularExp = regularExp.replaceAll("%year%", id3v2Tag.getYear());
         }
-        int i =0 ; //Make sure rename to already existing mp3 file before creating it
-        while(new File(Mp3File.getParentFile().getPath() + "\\" + regularExp + i + ".mp3").exists()) {
-            if(i>0) {
-                mp3file.save(Mp3File.getParentFile().getPath() + "\\" + regularExp + i + ".mp3");
-            }else{
-                mp3file.save(Mp3File.getParentFile().getPath() + "\\" + regularExp  + ".mp3");
+
+        regularExp = regularExp.replaceAll("[^A-Za-z0-9()\\-_\\[\\]]", " "); //remove illegal char
+        if (new File(Mp3File.getParentFile().getPath() + "\\" + regularExp + ".mp3").exists()) {
+            /*int i = 0; //Make sure rename to already existing mp3 file before creating it
+            while (new File(Mp3File.getParentFile().getPath() + "\\" + regularExp + i + ".mp3").exists()) {
+                    mp3file.save(Mp3File.getParentFile().getPath() + "\\" + regularExp + i + ".mp3");
 
             }
+             */
+            System.err.println("The file already exists exiting to prevent shit ");
+            return;
+        }else{
+            mp3file.save(Mp3File.getParentFile().getPath() + "\\" + regularExp + ".mp3");
+        }
+        if(new File(Mp3File.getParentFile().getPath() + "\\" + regularExp + ".mp3").exists()){
+            Mp3File.delete();
         }
         //Mp3File.delete();
     }
