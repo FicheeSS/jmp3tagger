@@ -109,6 +109,13 @@ public class IDObject  implements Runnable{
         }
         //Mp3File.delete();
     }
+
+    /**
+     * Sets the outside variable before running the thread
+     * @param lyrics : Boolean if lyrics need to be search
+     * @param reg : String regular expression of the .mp3 filename
+     * @param lf : LyricsFetcher the LyricsFetcher used to dll the lyrics; if null will not search
+     */
     public void beforeRun(boolean lyrics, String reg, @Nullable LyrcisFetcher lf ){
         if(lyrics && lf == null ) {
             lyrics = false;

@@ -49,7 +49,8 @@ public class MainController implements Initializable {
     private File selectedDirectory;
     private final ArrayList<IDObject> MP3FileList = new ArrayList<IDObject>();
     public CheckBox addLyrics;
-
+    @FXML
+    public Button folderApplyB;
     @FXML
     private CheckBox recursage;
 
@@ -306,7 +307,7 @@ public class MainController implements Initializable {
     public void onApplyOnFolder(ActionEvent actionEvent) {
         showTrayMessage("Starting batch apply...");
         applyBar.setProgress(0);
-        ArrayList<Thread> threadArrayList = new ArrayList<Thread>();
+        ArrayList<Thread> threadArrayList = new ArrayList<>();
         for(var mp3f : MP3FileList){
             mp3f.beforeRun(addLyrics.isSelected(),regularExpr.getText(),Main.lyrcisFetcher);
             Thread t = new Thread(mp3f);
@@ -316,7 +317,7 @@ public class MainController implements Initializable {
         Thread gt = new Thread(() -> {
             float nbT = threadArrayList.size();
             while (!threadArrayList.isEmpty()) {
-                ArrayList<Thread> tbd = new ArrayList<Thread>();
+                ArrayList<Thread> tbd = new ArrayList<>();
                 for (var t : threadArrayList) {
                     if (!t.isAlive()) {
                         tbd.add(t);
@@ -325,7 +326,9 @@ public class MainController implements Initializable {
                 for (var t : tbd) {
                     threadArrayList.remove(t);
                 }
-                applyBar.setProgress(((nbT - threadArrayList.size()) / nbT) * 100);
+
+                applyBar.setProgress(((nbT - threadArrayList.size()) / nbT));
+
             }
             showTrayMessage("Finished batch apply");
         });
