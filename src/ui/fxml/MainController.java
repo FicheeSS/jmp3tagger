@@ -5,11 +5,8 @@ import com.mpatric.mp3agic.NotSupportedException;
 import com.mpatric.mp3agic.UnsupportedTagException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import org.javatuples.Pair;
 import ui.IDObject;
@@ -19,8 +16,6 @@ import ui.TagsTypes;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -29,9 +24,7 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.stream.Stream;
 
-import static ui.MainJFX.trayIcon;
-
-public class MainController implements Initializable {
+public class MainController extends BaseControlleur {
     private final DirectoryChooser directoryChooser = new DirectoryChooser();
     private final ObservableList<MessageObject> items = FXCollections.observableArrayList();
     public TextField folder;
@@ -79,47 +72,7 @@ public class MainController implements Initializable {
 
     }
 
-    private String getStackTrace(Exception e) {
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        e.printStackTrace(pw);
-        return sw.toString();
-    }
 
-    /**
-     * Create and show an exception popup
-     * @param e Exeption
-     */
-    private void showError(Exception e) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error alert");
-        alert.setHeaderText(e.getMessage());
-
-        VBox dialogPaneContent = new VBox();
-
-        Label label = new Label("Stack Trace:");
-
-        String stackTrace = this.getStackTrace(e);
-        TextArea textArea = new TextArea();
-        textArea.setText(stackTrace);
-
-        dialogPaneContent.getChildren().addAll(label, textArea);
-
-        // Set content for Dialog Pane
-        alert.getDialogPane().setContent(dialogPaneContent);
-
-        alert.showAndWait();
-    }
-    protected void showTrayMessage(String s){
-        trayIcon.showInfoMessage("JMP3Tagger", s);
-    }
-
-    protected void showError(String errorMessage) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Erreur");
-        alert.setContentText(errorMessage);
-        alert.showAndWait();
-    }
 
     public void addFileToDisp(File f) {
         items.add(new MessageObject(f.getName(), f));
@@ -179,6 +132,7 @@ public class MainController implements Initializable {
             lyricsField.setText(Main.lyrcisFetcher.GetLyricsFromArtistNameAndTrackName(artistName.getText(), trackName.getText()));
         }catch (RuntimeException e ){
             showTrayMessage(e.getMessage());
+            showError(e);
         }
     }
 
@@ -193,6 +147,7 @@ public class MainController implements Initializable {
             idO.setTags(tags, regularExpr.getText());
         } catch (InvalidDataException | UnsupportedTagException | IOException | NotSupportedException e) {
             e.printStackTrace();
+            showTrayMessage(e.getMessage());
             showError(e);
         }
 
@@ -230,7 +185,7 @@ public class MainController implements Initializable {
 
     }
 
-    public void onClose(ActionEvent ignoredActionEvent) {
+    public void onClose() {
         MainJFX.stopTray();
     }
 
@@ -304,38 +259,8 @@ public class MainController implements Initializable {
          */
     }
 
-    public void onApplyOnFolder(ActionEvent actionEvent) {
-        showTrayMessage("Starting batch apply...");
-        applyBar.setProgress(0);
-        ArrayList<Thread> threadArrayList = new ArrayList<>();
-        for(var mp3f : MP3FileList){
-            mp3f.beforeRun(addLyrics.isSelected(),regularExpr.getText(),Main.lyrcisFetcher);
-            Thread t = new Thread(mp3f);
-            threadArrayList.add(t);
-            t.start();
-        }
-        Thread gt = new Thread(() -> {
-            float nbT = threadArrayList.size();
-            ArrayList<Thread> tbd = new ArrayList<>();
-
-            while (!threadArrayList.isEmpty()) {
-                for (var t : threadArrayList) {
-                    if (!t.isAlive()) {
-                        tbd.add(t);
-                    }
-                }
-                for (var t : tbd) {
-                    threadArrayList.remove(t);
-                }
-                tbd.clear();
-
-                applyBar.setProgress(((nbT - threadArrayList.size()) / nbT));
-
-            }
-            showTrayMessage("Finished batch apply");
-        });
-        gt.start();
-
+    public void onApplyOnFolder() {
+        Main.AM.BatchApply(applyBar,MP3FileList,addLyrics.isSelected(),regularExpr.getText());
     }
 
     private record MessageObject(String text, File f) {

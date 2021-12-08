@@ -19,7 +19,7 @@ import java.util.Objects;
 
 public class MainJFX extends Application {
     public static Stage Stage;
-    public final Image APP_ICON = new Image(Objects.requireNonNull(ui.Main.class.getResourceAsStream("LogoAppli.jpg")));
+    public static final Image APP_ICON = new Image(Objects.requireNonNull(ui.Main.class.getResourceAsStream("LogoAppli.jpg")));
     public static final URL APP_ICONLOC =  Main.class.getResource("LogoAppli.jpg");
     public static FXTrayIcon trayIcon;
 
@@ -44,6 +44,8 @@ public class MainJFX extends Application {
         Scene primaryScene = new Scene(root, (screenBounds.getWidth() > 1284) ? 1284 : screenBounds.getWidth(), (screenBounds.getHeight() > 811) ? 811 : screenBounds.getHeight() - 10);
         primaryStage.setScene(primaryScene);
         primaryStage.getIcons().add(APP_ICON);
+        primaryStage.setMinHeight((screenBounds.getHeight() > 811) ? 811 : screenBounds.getHeight() - 10);
+        primaryStage.setMinWidth((screenBounds.getWidth() > 1284) ? 1284 : screenBounds.getWidth());
         primaryStage.show();
         trayIcon = new FXTrayIcon(MainJFX.Stage,MainJFX.APP_ICONLOC);
         trayIcon.show();
@@ -63,4 +65,6 @@ public class MainJFX extends Application {
         alert.showAndWait();
 
     }
+
+
 }

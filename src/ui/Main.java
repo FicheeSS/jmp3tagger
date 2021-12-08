@@ -14,6 +14,7 @@ public class Main {
     public static int VERSION;
     public static int BUILDNUMBER;
     public static String BASEREGEX ;
+    public static ApplicationManager AM = new ApplicationManager();
 
     public static void main(String[] args) {
         try {
