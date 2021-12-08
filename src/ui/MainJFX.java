@@ -8,13 +8,18 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
+import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Objects;
 
 public class MainJFX extends Application {
@@ -49,19 +54,33 @@ public class MainJFX extends Application {
         primaryStage.show();
         trayIcon = new FXTrayIcon(MainJFX.Stage,MainJFX.APP_ICONLOC);
         trayIcon.show();
-        Stage.setOnCloseRequest((WindowEvent t) -> {
-            stopTray();
-        });
+        Stage.setOnCloseRequest((WindowEvent t) -> stopTray());
         MenuItem menuItemTest = new MenuItem("Exit");
         menuItemTest.setOnAction(e -> stopTray()
                );
         trayIcon.addMenuItem(menuItemTest);
         Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("ATTENTION");
-        alert.setHeaderText("Attention");
-        alert.setContentText("Ce programme est très instable et codé par quelqu'un de très instable aussi. A utiliser avec prudence");
+        alert.setTitle("Disclaimer");
+
         var stage = (Stage) alert.getDialogPane().getScene().getWindow();
         stage.getIcons().add(APP_ICON);
+        VBox dialogPaneContent = new VBox();
+
+        Label label = new Label("Disclamer");
+        
+        String data = new String(
+                Files.readAllBytes(
+                        Paths.get(Objects.requireNonNull(
+                                getClass().getResource("/ui/DISCLAIMER.TXT")).toURI()
+                        )
+                )
+        );
+
+        TextArea textArea = new TextArea();
+        textArea.setText(data);
+        dialogPaneContent.getChildren().addAll(label, textArea);
+        // Set content for Dialog Pane
+        alert.getDialogPane().setContent(dialogPaneContent);
         alert.showAndWait();
 
     }
